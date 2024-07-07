@@ -1,3 +1,4 @@
+/* Estilos para las cartas */
 .card {
     perspective: 1000px;
     cursor: pointer;
@@ -42,4 +43,36 @@ img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+/* Estilos para el contenedor de la cuadrícula */
+.fixed-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+/* Clases para diferentes cantidades de columnas */
+.has-2-cols {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.has-4-cols {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.has-6-cols {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.has-8-cols {
+    grid-template-columns: repeat(8, 1fr);
+}
+
+.has-10-cols {
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.has-12-cols {
+    grid-template-columns: repeat(12, 1fr);
 }

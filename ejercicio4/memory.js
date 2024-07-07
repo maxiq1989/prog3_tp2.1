@@ -18,7 +18,7 @@ class Card {
                   </div>
               </div>
           </div>
-      `;
+        `;
         return cardElement;
     }
 
@@ -30,6 +30,19 @@ class Card {
     #unflip() {
         const cardElement = this.element.querySelector(".card");
         cardElement.classList.remove("flipped");
+    }
+
+    toggleFlip() {
+        this.isFlipped = !this.isFlipped;
+        if (this.isFlipped) {
+            this.#flip();
+        } else {
+            this.#unflip();
+        }
+    }
+
+    matches(otherCard) {
+        return this.name === otherCard.name;
     }
 }
 
@@ -69,6 +82,27 @@ class Board {
         });
     }
 
+    shuffleCards() {
+        this.cards = this.cards
+            .map((card) => ({ card, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ card }) => card);
+    }
+
+    reset() {
+        this.shuffleCards();
+        this.flipDownAllCards();
+        this.render();
+    }
+
+    flipDownAllCards() {
+        this.cards.forEach(card => {
+            if (card.isFlipped) {
+                card.toggleFlip();
+            }
+        });
+    }
+
     onCardClicked(card) {
         if (this.onCardClick) {
             this.onCardClick(card);
@@ -81,6 +115,8 @@ class MemoryGame {
         this.board = board;
         this.flippedCards = [];
         this.matchedCards = [];
+        this.moveCount = 0;  // Contador de movimientos
+        this.updateMoveCounter(); // Actualiza el contador de movimientos
         if (flipDuration < 350 || isNaN(flipDuration) || flipDuration > 3000) {
             flipDuration = 350;
             alert(
@@ -96,11 +132,43 @@ class MemoryGame {
         if (this.flippedCards.length < 2 && !card.isFlipped) {
             card.toggleFlip();
             this.flippedCards.push(card);
+            this.moveCount++; // Incrementar contador de movimientos
+            this.updateMoveCounter(); // Actualiza el contador de movimientos
 
             if (this.flippedCards.length === 2) {
                 setTimeout(() => this.checkForMatch(), this.flipDuration);
             }
         }
+    }
+
+    checkForMatch() {
+        const [card1, card2] = this.flippedCards;
+        if (card1.matches(card2)) {
+            this.matchedCards.push(card1, card2);
+            this.flippedCards = [];
+            if (this.matchedCards.length === this.board.cards.length) {
+                alert(`¡Felicidades! Has encontrado todos los pares en ${this.moveCount} movimientos.`);
+            }
+        } else {
+            setTimeout(() => {
+                card1.toggleFlip();
+                card2.toggleFlip();
+                this.flippedCards = [];
+            }, this.flipDuration);
+        }
+    }
+
+    resetGame() {
+        this.flippedCards = [];
+        this.matchedCards = [];
+        this.moveCount = 0;  // Reiniciar contador de movimientos
+        this.updateMoveCounter(); // Actualiza el contador de movimientos
+        this.board.reset();
+    }
+
+    updateMoveCounter() {
+        const moveCounterElement = document.getElementById("move-counter");
+        moveCounterElement.textContent = `Movimientos: ${this.moveCount}`;
     }
 }
 
